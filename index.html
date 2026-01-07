@@ -74,7 +74,7 @@
         </div>
 
         <!-- ✅ Task 3: Add a Contact Form -->
-         <div id="contact-section" class="container mt-5 mb-5">
+        <div id="contact-section" class="container mt-5 mb-5">
             <div class="row justify-content-center">
                 <div class="col-md-6">
                 <h2 class="text-center mb-4">Contact Us</h2>
@@ -99,9 +99,48 @@
             </div>
         </div>
 
+        <!-- ✅ Task 4: Add a Modal -->
+        <div class="modal fade" id="submissionModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Form Submission</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Name:</strong> <span id="modalName"></span></p>
+                    <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+                    <p><strong>Message:</strong> <span id="modalMessage"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            //get the values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            
+            //display
+            document.getElementById('modalName').textContent = name;
+            document.getElementById('modalEmail').textContent = email;
+            document.getElementById('modalMessage').textContent = message;
+            
+            //show
+            const modal = new bootstrap.Modal(document.getElementById('submissionModal'));
+            modal.show();
+        });
+    </script>
 </body>
 
 </html>
