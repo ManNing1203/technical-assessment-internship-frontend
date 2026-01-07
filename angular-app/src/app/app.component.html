@@ -1,0 +1,226 @@
+<div class="container-fluid">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+      <div class="navbar-nav ms-auto">
+        <span class="navbar-text text-white">{{ title }}</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="row mb-5">
+      <div class="col-12 text-center">
+        <h1 class="display-4">Single Page Application</h1>
+        <p class="lead">Form Validation • HTTP Calls • Business Logic</p>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="row mb-5">
+      <div class="col-lg-6 mx-auto">
+        <div class="card shadow">
+          <div class="card-header bg-primary text-white">
+            <h3 class="card-title mb-0">Contact Form with Validation</h3>
+          </div>
+          <div class="card-body">
+            
+            <!-- Success -->
+            <div *ngIf="formSubmitted" class="alert alert-success" role="alert">
+              <i class="fas fa-check-circle"></i>
+              <strong>Success!</strong> Your message has been submitted successfully.
+            </div>
+
+            <!-- Error -->
+            <div *ngIf="error && !formSubmitted" class="alert alert-danger" role="alert">
+              <i class="fas fa-exclamation-triangle"></i>
+              {{ error }}
+            </div>
+
+            <!-- Contact Form -->
+            <form [formGroup]="contactForm" (ngSubmit)="onSubmit()" *ngIf="!formSubmitted">
+              
+              <!-- Name -->
+              <div class="mb-3">
+                <label for="name" class="form-label">Full Name *</label>
+                <input 
+                  type="text" 
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('name')"
+                  [class.is-valid]="f['name'].valid && (f['name'].dirty || f['name'].touched)"
+                  id="name" 
+                  formControlName="name"
+                  placeholder="Enter your full name">
+                <div *ngIf="isFieldInvalid('name')" class="invalid-feedback">
+                  {{ getErrorMessage('name') }}
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="email" class="form-label">Email Address *</label>
+                <input 
+                  type="email" 
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('email')"
+                  [class.is-valid]="f['email'].valid && (f['email'].dirty || f['email'].touched)"
+                  id="email" 
+                  formControlName="email"
+                  placeholder="Enter your email">
+                <div *ngIf="isFieldInvalid('email')" class="invalid-feedback">
+                  {{ getErrorMessage('email') }}
+                </div>
+              </div>
+
+              <!-- Phone -->
+              <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number *</label>
+                <input 
+                  type="tel" 
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('phone')"
+                  [class.is-valid]="f['phone'].valid && (f['phone'].dirty || f['phone'].touched)"
+                  id="phone" 
+                  formControlName="phone"
+                  placeholder="1234567890">
+                <div *ngIf="isFieldInvalid('phone')" class="invalid-feedback">
+                  {{ getErrorMessage('phone') }}
+                </div>
+              </div>
+
+              <!-- Message -->
+              <div class="mb-3">
+                <label for="message" class="form-label">Message *</label>
+                <textarea 
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('message')"
+                  [class.is-valid]="f['message'].valid && (f['message'].dirty || f['message'].touched)"
+                  id="message" 
+                  formControlName="message"
+                  rows="4"
+                  placeholder="Enter your message (minimum 10 characters)"></textarea>
+                <div *ngIf="isFieldInvalid('message')" class="invalid-feedback">
+                  {{ getErrorMessage('message') }}
+                </div>
+              </div>
+
+              <!-- Checkbox -->
+              <div class="mb-3 form-check">
+                <input 
+                  type="checkbox" 
+                  class="form-check-input"
+                  [class.is-invalid]="isFieldInvalid('agreement')"
+                  id="agreement" 
+                  formControlName="agreement">
+                <label class="form-check-label" for="agreement">
+                  I agree to the terms and conditions *
+                </label>
+                <div *ngIf="isFieldInvalid('agreement')" class="invalid-feedback">
+                  You must agree to the terms and conditions
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <div class="d-grid">
+                <button 
+                  type="submit" 
+                  class="btn btn-primary"
+                  [disabled]="loading">
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                  {{ loading ? 'Submitting...' : 'Submit Form' }}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Display Section -->
+    <div class="row mb-5">
+      <!-- Users List -->
+      <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+          <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h4 class="card-title mb-0">Users (HTTP GET)</h4>
+            <button class="btn btn-light btn-sm" (click)="refreshData()">
+              <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+          </div>
+          <div class="card-body">
+            <div *ngIf="loading && users.length === 0" class="text-center">
+              <div class="spinner-border" role="status"></div>
+              <p class="mt-2">Loading users...</p>
+            </div>
+            
+            <div *ngIf="!loading && users.length > 0">
+              <div class="list-group">
+                <a 
+                  *ngFor="let user of users" 
+                  href="javascript:void(0)" 
+                  class="list-group-item list-group-item-action"
+                  [class.active]="selectedUser?.id === user.id"
+                  (click)="selectUser(user)">
+                  <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{ user.name }}</h6>
+                    <small>ID: {{ user.id }}</small>
+                  </div>
+                  <p class="mb-1">{{ user.email }}</p>
+                  <small>{{ user.website }}</small>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posts List -->
+      <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+          <div class="card-header bg-info text-white">
+            <h4 class="card-title mb-0">Recent Posts (HTTP GET)</h4>
+          </div>
+          <div class="card-body">
+            <div *ngIf="posts.length > 0">
+              <div *ngFor="let post of posts" class="card mb-3">
+                <div class="card-body">
+                  <h6 class="card-title">{{ post.title }}</h6>
+                  <p class="card-text">{{ post.body | slice:0:100 }}...</p>
+                  <small class="text-muted">User ID: {{ post.userId }}</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Details -->
+    <div class="row mb-5" *ngIf="selectedUser">
+      <div class="col-12">
+        <div class="card shadow">
+          <div class="card-header bg-warning text-dark">
+            <h4 class="card-title mb-0">Selected User Details</h4>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>Name:</strong> {{ selectedUser.name }}</p>
+                <p><strong>Email:</strong> {{ selectedUser.email }}</p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Phone:</strong> {{ selectedUser.phone }}</p>
+                <p><strong>Website:</strong> {{ selectedUser.website }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 border-top">
+      <p class="text-muted">Angular SPA Assessment - Demonstrating Forms, Validation, HTTP Calls & Business Logic</p>
+    </footer>
+  </div>
+</div>
